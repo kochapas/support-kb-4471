@@ -4,7 +4,7 @@ title: '#4471 · what the reports show'
 owner: kochapas
 status: open
 reviewed: 2026-11-05
-signature: 'Allen (kochapas), with Claude Opus 5.5'
+signature: 'v1.eyJzdWIiOiIyODIzIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTM5MTk3MDMsImV4cCI6MTc5NDAwNjEwM30.8q1HJ1rl8N01BYA_SFWt7rw-MzzYgfrcrwnxyCMfRiE'
 ---
 
 <script>
