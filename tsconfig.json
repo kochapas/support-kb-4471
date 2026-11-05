@@ -1,0 +1,13 @@
+{
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"strict": true,
+		"sourceMap": true,
+		// Vite resolves `#lib/...` through the `imports` field in package.json. TypeScript does not try
+		// extensions on an `imports` target, so extensionless `#lib/kb/causes` needs this mapping too.
+		"paths": {
+			"#lib/*": ["./src/lib/*"]
+		}
+	},
+	"include": ["src", "*.ts"]
+}
