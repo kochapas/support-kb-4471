@@ -1,11 +1,14 @@
-// The problems inside a merged ticket, read from what its reports say, not from their subject line.
+// The problems inside a merged ticket, counted the way the desk counts: with its own code (causes.ts)
+// and its own notes (desk-notes.json), not from the subject line.
 //
-// causes.ts already tells two bugs apart by tenant and way in: `parser` and `hint`. A third one hides
-// under them: reports the desk read as a one-day move (desk-notes.json). A month/day swap never moves
-// a date by one day, so those reports are their own problem: `shift`. Each problem has its own ticket.
-import { causeOf, uniqueById, type Report, type Tenant } from '#lib/kb/causes';
+// causes.ts files every report under the cause its tenant and way in point to: `parser` or `hint`.
+// A third problem hides under them: reports the desk read as a one-day move (desk-notes.json). A
+// month/day swap never moves a date by one day, so those reports are a problem of their own: `shift`.
+// The desk counts a report where it is filed and footnotes the ones it read differently (`readAs`),
+// so a `shift` report stays in its cause's count as well. Each problem has its own ticket.
+import { causeOf, groupByCause, readAs, uniqueById, type Cause, type Report, type Tenant } from '#lib/kb/causes';
 
-export type Problem = 'parser' | 'hint' | 'shift' | 'unplaced';
+export type Problem = Cause | 'shift' | 'unplaced';
 
 // Where the tickets live. One GitHub issue per problem.
 export const TICKET_REPO = 'https://github.com/kochapas/support-kb-4471';
@@ -24,63 +27,79 @@ export function ticketUrl(p: Problem): string | null {
   return n === null ? null : `${TICKET_REPO}/issues/${n}`;
 }
 
-// One report, one problem. The desk's one-day reading wins over the tenant's cause: the cause
-// says which bug the tenant can hit, the body says which one they did.
-export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem {
-  if (oneDayMove.includes(r.id)) return 'shift';
-  return causeOf(r, t) ?? 'unplaced';
-}
-
 export type ProblemGroup = {
   problem: Problem;
   reports: Report[];
+  // Filed by cause (causes.ts): every report sits in exactly one of these. `shift` is not filed:
+  // its reports are the ones the desk read as a one-day move, wherever they are filed.
+  filed: boolean;
   tenants: string[];
   channels: Record<string, number>;
   // What intake tagged these reports as: tag → count. Intake guesses from the reporter's browser.
   taggedAs: Record<string, number>;
-  subjects: string[];
+  // Reports this group shares with other problems: problem → count.
+  shared: Partial<Record<Problem, number>>;
   firstSeen: string;
   lastSeen: string;
 };
 
 const tally = (xs: string[]) => xs.reduce<Record<string, number>>((n, x) => ({ ...n, [x]: (n[x] ?? 0) + 1 }), {});
 
+function describe(problem: Problem, rs: Report[], filed: boolean, shared: ProblemGroup['shared']): ProblemGroup {
+  const days = rs.map((r) => r.receivedAt.slice(0, 10)).sort();
+  return {
+    problem,
+    reports: rs,
+    filed,
+    tenants: [...new Set(rs.map((r) => r.tenant))].sort(),
+    channels: tally(rs.map((r) => r.channel)),
+    taggedAs: tally(rs.map((r) => r.meta.intakeTag)),
+    shared,
+    firstSeen: days[0],
+    lastSeen: days[days.length - 1],
+  };
+}
+
 export function mergedInto(reports: Report[], ticket: number): Report[] {
   return uniqueById(reports).filter((r) => r.mergedInto === ticket);
 }
 
+// The desk's count per problem: its causes as groupByCause files them, plus the reports it read as a
+// one-day move, counted again under `shift`.
 export function groupByProblem(
   reports: Report[],
   tenantOf: (r: Report) => Tenant | undefined,
   oneDayMove: readonly string[],
 ): ProblemGroup[] {
-  const by = new Map<Problem, Report[]>();
-  for (const r of reports) {
-    const p = problemOf(r, tenantOf(r), oneDayMove);
-    by.set(p, [...(by.get(p) ?? []), r]);
-  }
-  return ORDER.filter((p) => by.has(p)).map((p) => {
-    const rs = by.get(p)!;
-    const days = rs.map((r) => r.receivedAt.slice(0, 10)).sort();
-    return {
-      problem: p,
-      reports: rs,
-      tenants: [...new Set(rs.map((r) => r.tenant))].sort(),
-      channels: tally(rs.map((r) => r.channel)),
-      taggedAs: tally(rs.map((r) => r.meta.intakeTag)),
-      subjects: [...new Set(rs.map((r) => r.subject))].sort(),
-      firstSeen: days[0],
-      lastSeen: days[days.length - 1],
-    };
+  const causes = groupByCause(reports, tenantOf);
+  const groups = causes.map((g) => {
+    const moved = readAs(g, oneDayMove);
+    return describe(g.cause, g.reports, true, moved ? { shift: moved } : {});
   });
+  const moved = reports.filter((r) => oneDayMove.includes(r.id));
+  if (moved.length) {
+    const filedUnder = Object.fromEntries(causes.filter((g) => readAs(g, oneDayMove)).map((g) => [g.cause, readAs(g, oneDayMove)]));
+    groups.push(describe('shift', moved, false, filedUnder));
+  }
+  return ORDER.flatMap((p) => groups.filter((g) => g.problem === p));
+}
+
+// What a report is about, one problem each: `shift` if the desk read it as a one-day move, else its cause.
+export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem {
+  if (oneDayMove.includes(r.id)) return 'shift';
+  return causeOf(r, t) ?? 'unplaced';
 }
 
 // Subject lines that turn up under more than one problem: the reason a subject match merged them.
-export function sharedSubjects(groups: ProblemGroup[]): { subject: string; problems: Problem[] }[] {
-  const seen = new Map<string, Problem[]>();
-  for (const g of groups) for (const s of g.subjects) seen.set(s, [...(seen.get(s) ?? []), g.problem]);
+export function sharedSubjects(
+  reports: Report[],
+  tenantOf: (r: Report) => Tenant | undefined,
+  oneDayMove: readonly string[],
+): { subject: string; problems: Problem[] }[] {
+  const seen = new Map<string, Set<Problem>>();
+  for (const r of reports) seen.set(r.subject, (seen.get(r.subject) ?? new Set()).add(problemOf(r, tenantOf(r), oneDayMove)));
   return [...seen.entries()]
-    .filter(([, ps]) => ps.length > 1)
-    .map(([subject, problems]) => ({ subject, problems }))
+    .filter(([, ps]) => ps.size > 1)
+    .map(([subject, ps]) => ({ subject, problems: ORDER.filter((p) => ps.has(p)) }))
     .sort((a, b) => a.subject.localeCompare(b.subject));
 }

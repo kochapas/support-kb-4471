@@ -26,17 +26,19 @@ time zone of an invite, so reports from those two keep coming after it ships.
 
 <ProblemTable ticket={4471} />
 
-## How a report is placed
+## How the reports are counted
 
-Each report goes under exactly one problem. The logic is in `#lib/kb/problems`; this list is
-what it does.
+The way the desk counts, with its own code: `groupByCause` in `causes.ts` and the desk's notes in
+`desk-notes.json`. The page adds no rule of its own for `parser` and `hint`.
 
-1. **`shift`**: the desk read the report as a one-day move (`desk-notes.json`). A month and a day
-   that trade places never land one day apart, so these are not `parser` reports, whatever the
-   tenant writes.
-2. **`hint`**: the tenant writes the day first and the report came in through a booking-v3 form,
+1. **`parser`**: the tenant writes the day first, and the report did not come through a booking-v3
+   form (`causes.ts`).
+2. **`hint`**: the tenant writes the day first, and the report came through a booking-v3 form,
    whose hint prints `MM/DD/YYYY` (`causes.ts`).
-3. **`parser`**: the tenant writes the day first and none of the above holds (`causes.ts`).
+3. **`shift`**: the desk read the report as a one-day move (`desk-notes.json`). A month and a day
+   that trade places never land one day apart, so this is a problem of its own. The desk counts a
+   report where it is filed and footnotes the ones it read differently, so these reports count
+   under their cause and again here.
 4. **`unplaced`**: no tenant on file, or the tenant does not write the day first. No ticket until
    someone reads them.
 
@@ -64,8 +66,8 @@ not as instants.
 - Matching on subject merged these ([decision 0001](/kb/decisions/0001-dedupe-by-subject)). The same
   subject line turns up under different problems, so the subject cannot tell them apart. Read the
   body, or at least the tenant and the way in, before you merge.
-- Keep a report's ticket with its problem. When a new report comes in for #4471, place it with the
-  table above and add it to that problem's ticket.
+- Keep a report's ticket with its problem. When a new report comes in for #4471, file it by cause
+  as the desk always has, and add it to that problem's ticket; a one-day move goes on `shift` too.
 - The numbers on this page are built from the reports at render time. When the desk merges more
   reports into #4471, they move on their own.
 

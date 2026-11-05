@@ -10,10 +10,14 @@
 
   const merged = $derived(mergedInto(reports as Report[], ticket));
   const groups = $derived(groupByProblem(merged, tenantOf, notes.oneDayMove));
-  const placed = $derived(groups.reduce((n, g) => n + g.reports.length, 0));
+  const filed = $derived(groups.filter((g) => g.filed).reduce((n, g) => n + g.reports.length, 0));
   const tickets = $derived(groups.filter((g) => PROBLEMS[g.problem].issue !== null).length);
   const allSubjects = $derived(new Set(merged.map((r) => r.subject)).size);
-  const shared = $derived(sharedSubjects(groups));
+  const shared = $derived(sharedSubjects(merged, tenantOf, notes.oneDayMove));
+  const also = (g: { shared: Partial<Record<string, number>> }) =>
+    Object.entries(g.shared)
+      .map(([p, n]) => `${n} also in ${p}`)
+      .join(' · ');
   const list = (n: Record<string, number>) =>
     Object.entries(n)
       .sort((a, b) => b[1] - a[1])
@@ -30,7 +34,7 @@
 
 <table>
   <thead>
-    <tr><th>problem</th><th>reports</th><th>tenants</th><th>came in by</th><th>intake tagged</th><th>seen</th><th>ticket</th></tr>
+    <tr><th>problem</th><th>reports</th><th>tenants</th><th>came in by</th><th>intake tagged</th><th>seen</th><th>shared</th><th>ticket</th></tr>
   </thead>
   <tbody>
     {#each groups as g (g.problem)}
@@ -42,12 +46,13 @@
         <td class="small">{list(g.channels)}</td>
         <td class="small">{list(g.taggedAs)}</td>
         <td class="small">{g.firstSeen} → {g.lastSeen}</td>
+        <td class="small">{also(g)}</td>
         <td>{#if url}<a href={url}>#{PROBLEMS[g.problem].issue}</a>{:else}none{/if}</td>
       </tr>
     {/each}
   </tbody>
   <tfoot>
-    <tr><td>placed</td><td class="n">{placed}</td><td colspan="5" class="small">{placed === merged.length ? `every report in #${ticket} sits under exactly one problem` : `${merged.length - placed} reports not placed — check problems.ts`}</td></tr>
+    <tr><td>filed by cause</td><td class="n">{filed}</td><td colspan="6" class="small">{filed === merged.length ? `every report in #${ticket} is filed under one cause; shift counts the ones the desk read as a one-day move again` : `${merged.length - filed} reports not filed — check causes.ts`}</td></tr>
   </tfoot>
 </table>
 
