@@ -1,9 +1,10 @@
 <script lang="ts">
   import reports from '#lib/data/reports-4471.json';
   import notes from '#lib/data/desk-notes.json';
+  import update from '#lib/data/engineering-4471.json';
   import type { Report } from '#lib/kb/causes';
   import { tenantOf } from '#lib/kb/locales';
-  import { groupByProblem, mergedInto, PROBLEMS, sharedSubjects, ticketUrl } from '#lib/kb/problems';
+  import { groupByProblem, mergedInto, PROBLEMS, sharedSubjects, stateOf, ticketUrl } from '#lib/kb/problems';
 
   // `show`: how many reports to quote under each problem.
   let { ticket, show = 2 }: { ticket: number; show?: number } = $props();
@@ -12,6 +13,7 @@
   const groups = $derived(groupByProblem(merged, tenantOf, notes.oneDayMove));
   const filed = $derived(groups.filter((g) => g.filed).reduce((n, g) => n + g.reports.length, 0));
   const tickets = $derived(groups.filter((g) => PROBLEMS[g.problem].issue !== null).length);
+  const open = $derived(groups.filter((g) => PROBLEMS[g.problem].issue !== null && stateOf(g.problem, update).state === 'open').length);
   const allSubjects = $derived(new Set(merged.map((r) => r.subject)).size);
   const shared = $derived(sharedSubjects(merged, tenantOf, notes.oneDayMove));
   const also = (g: { shared: Partial<Record<string, number>> }) =>
@@ -29,16 +31,21 @@
 <p class="sum">
   <strong>{merged.length}</strong> reports merged into #{ticket} ·
   <strong>{groups.length}</strong> {groups.length === 1 ? 'problem' : 'problems'} ·
-  <strong>{tickets}</strong> {tickets === 1 ? 'ticket' : 'tickets'}
+  <strong>{tickets}</strong> {tickets === 1 ? 'ticket' : 'tickets'} ·
+  <strong>{open}</strong> still open
 </p>
+{#if update.ticket === ticket}
+  <p class="small">#{ticket} closed {update.closed} ({update.source}).</p>
+{/if}
 
 <table>
   <thead>
-    <tr><th>problem</th><th>reports</th><th>tenants</th><th>came in by</th><th>intake tagged</th><th>seen</th><th>shared</th><th>ticket</th></tr>
+    <tr><th>problem</th><th>reports</th><th>tenants</th><th>came in by</th><th>intake tagged</th><th>seen</th><th>shared</th><th>ticket</th><th>state</th></tr>
   </thead>
   <tbody>
     {#each groups as g (g.problem)}
       {@const url = ticketUrl(g.problem)}
+      {@const st = stateOf(g.problem, update)}
       <tr class:none={!url}>
         <td><code>{g.problem}</code><br /><span class="title">{PROBLEMS[g.problem].title}</span></td>
         <td class="n">{g.reports.length}</td>
@@ -48,11 +55,12 @@
         <td class="small">{g.firstSeen} → {g.lastSeen}</td>
         <td class="small">{also(g)}</td>
         <td>{#if url}<a href={url}>#{PROBLEMS[g.problem].issue}</a>{:else}none{/if}</td>
+        <td class:open={st.state === 'open'}>{st.state}{#if st.by}<br /><span class="small">{st.by}</span>{/if}</td>
       </tr>
     {/each}
   </tbody>
   <tfoot>
-    <tr><td>filed by cause</td><td class="n">{filed}</td><td colspan="6" class="small">{filed === merged.length ? `every report in #${ticket} is filed under one cause; shift counts the ones the desk read as a one-day move again` : `${merged.length - filed} reports not filed — check causes.ts`}</td></tr>
+    <tr><td>filed by cause</td><td class="n">{filed}</td><td colspan="7" class="small">{filed === merged.length ? `every report in #${ticket} is filed under one cause; shift counts the ones the desk read as a one-day move again` : `${merged.length - filed} reports not filed — check causes.ts`}</td></tr>
   </tfoot>
 </table>
 
@@ -77,6 +85,7 @@
   .small, .title { color: var(--muted); font-size: 0.85em; }
   .note { color: var(--muted); font-size: 0.85em; }
   .none td { background: var(--warn-bg); }
+  td.open { color: var(--warn); font-weight: 600; }
   tfoot td { font-weight: 600; border-bottom: none; }
   section h3 { font-size: 1rem; margin: 1.5rem 0 0.25rem; }
   blockquote { margin: 0.4rem 0; padding: 0.3rem 0.8rem; border-left: 3px solid var(--line); }

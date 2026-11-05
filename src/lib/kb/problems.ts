@@ -22,6 +22,18 @@ export const PROBLEMS: Record<Problem, { title: string; issue: number | null }> 
 
 export const ORDER: readonly Problem[] = ['parser', 'hint', 'shift', 'unplaced'];
 
+// What engineering did about each problem when it closed the merged ticket (engineering-4471.json).
+// A problem it did not name is still open: closing #4471 did not reach it.
+export type State = 'fixed' | "won't fix" | 'open';
+
+export function stateOf(
+  p: Problem,
+  update: { problems: Partial<Record<string, { state: string; by: string }>> },
+): { state: State; by: string | null } {
+  const u = update.problems[p];
+  return u ? { state: u.state as State, by: u.by } : { state: 'open', by: null };
+}
+
 export function ticketUrl(p: Problem): string | null {
   const n = PROBLEMS[p].issue;
   return n === null ? null : `${TICKET_REPO}/issues/${n}`;

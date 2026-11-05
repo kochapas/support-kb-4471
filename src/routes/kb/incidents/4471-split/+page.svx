@@ -13,13 +13,16 @@ signature: 'Allen (kochapas), with Claude Opus 5.5'
   import RenderStamp from '#lib/kb/RenderStamp.svelte';
 </script>
 
-[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Its reports say otherwise.
+[#4471](/kb/incidents/4471) was marked known: one issue, one fix. Its reports say otherwise.
 Read for what happened to the date, not for their subject line, they hold three problems with
-three different fixes. Each problem now has a ticket of its own.
+three different fixes. Each problem has a ticket of its own.
+
+Engineering closed #4471 on 5 October: the parser fix shipped, and the booking-v3 form was
+retired, so its hint will not be fixed. Those two tickets are closed with it.
 
 <Callout kind="warn">
-The fix queued for #4471 changes the parser. It does not touch the booking-v3 form hint or the
-time zone of an invite, so reports from those two keep coming after it ships.
+Closing #4471 did not reach <code>shift</code>. Neither the parser fix nor retiring booking-v3 touches the
+time zone of an invite, so these reports keep coming. Its ticket stays open.
 </Callout>
 
 ## The problems in #4471
@@ -50,16 +53,17 @@ the gap stays visible: an en-US browser is not a booking-v3 form.
 **`parser`**: the shared parser reads every date month first. For a tenant who writes the day
 first, any date with both numbers at 12 or under comes out with day and month swapped:
 booked 2 July, invite for 7 February. Fix: parse with the tenant's locale, the way
-`dayFirst()` already asks the platform.
+`dayFirst()` already asks the platform. Closed, fixed: `fix(dates): parse dd/mm for eu locales`.
 
 **`hint`**: booking-v3 prints `MM/DD/YYYY` under its date field, and the form then reads the
 date the tenant's way, day first. People type what the hint says and get day and month
 swapped. Fix: print the hint from the tenant's locale. The parser fix does not reach this one.
+Closed, won't fix: the booking-v3 form is retired, so nobody types into that hint any more.
 
 **`shift`**: the date is right but lands one day early for some readers: the same meeting shows
 Tuesday in Lisbon and Monday in Toronto, and an invite can arrive "before" the booking. That is
 a date sent as midnight in one time zone and shown in another. Fix: send all-day dates as dates,
-not as instants.
+not as instants. Open: nothing engineering shipped for #4471 touches it.
 
 ## For the desk
 
@@ -68,6 +72,8 @@ not as instants.
   body, or at least the tenant and the way in, before you merge.
 - Keep a report's ticket with its problem. When a new report comes in for #4471, file it by cause
   as the desk always has, and add it to that problem's ticket; a one-day move goes on `shift` too.
+- Ticket states come from engineering's update (`engineering-4471.json`); a problem it did not
+  name stays open. When engineering closes `shift`, add it there and the table follows.
 - The numbers on this page are built from the reports at render time. When the desk merges more
   reports into #4471, they move on their own.
 

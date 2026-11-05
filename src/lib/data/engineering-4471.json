@@ -1,0 +1,9 @@
+{
+  "ticket": 4471,
+  "closed": "2026-10-05",
+  "source": "engineering update to the desk",
+  "problems": {
+    "parser": { "state": "fixed", "by": "fix(dates): parse dd/mm for eu locales" },
+    "hint": { "state": "won't fix", "by": "booking-v3 form retired" }
+  }
+}
