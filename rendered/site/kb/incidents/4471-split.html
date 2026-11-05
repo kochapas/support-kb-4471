@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link href="../../_app/immutable/entry/start.BPcehJr-.js" rel="modulepreload">
+		<link href="../../_app/immutable/entry/payload.DSmR2FwN.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/DclECHGd.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/CptVIHXj.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/CHfFqfNT.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/DQG8lHS1.js" rel="modulepreload">
+		<link href="../../_app/immutable/entry/app.Y6lVzF4B.js" rel="modulepreload">
+		<link href="../../_app/immutable/nodes/0.Izv2btRW.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
+		<link href="../../_app/immutable/nodes/5.BhajwV-l.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/B44AOLP-.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/DkoUumqI.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/CVBzP17p.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/DcZ9TEUN.js" rel="modulepreload">
+		<!--e2jw2j--><!----><title>#4471 · what the reports show · support kb</title>
+		<link href="../../_app/immutable/assets/runbook.COyw0cbZ.css" rel="stylesheet">
+		<link href="../../_app/immutable/assets/Callout.AbLv9dM_.css" rel="stylesheet">
+		<link href="../../_app/immutable/assets/_page.D856oV4Y.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents"><!--[--><!--[--><!--[0--><!--[--><!--[--><!--[-1--><!--[--><div class="kb svelte-e2jw2j"><header><a class="crumb svelte-e2jw2j" href="/kb">support desk · kb</a> <h1 class="svelte-e2jw2j">#4471 · what the reports show</h1> <p class="meta svelte-e2jw2j"><span>owner <b>kochapas</b></span> <span class="status open svelte-e2jw2j">open</span> <span class="svelte-e2jw2j">reviewed 2026-11-05 · 0 days ago</span></p></header> <!--[-1--><!--]--> <main><p><a href="/kb/incidents/4471">#4471</a> is marked known: one issue, one fix queued. Its reports say otherwise.
+Read for what happened to the date, not for their subject line, they hold three problems with
+three different fixes. Each problem now has a ticket of its own.</p> <aside class="warn svelte-17bri61"><!---->The fix queued for #4471 changes the parser. It does not touch the booking-v3 form hint or the
+time zone of an invite, so reports from those two keep coming after it ships.<!----></aside><!----> <h2>The problems in #4471</h2> <p class="sum svelte-1op6c6"><strong>412</strong> reports merged into #4471 · <strong>3</strong> problems · <strong>3</strong> tickets</p> <table><thead><tr><th>problem</th><th>reports</th><th>tenants</th><th>came in by</th><th>intake tagged</th><th>seen</th><th>ticket</th></tr></thead><tbody><!--[--><tr class="svelte-1op6c6"><td class="svelte-1op6c6"><code>parser</code><br/><span class="title svelte-1op6c6">Shared parser reads day-first dates month first</span></td><td class="n svelte-1op6c6">374</td><td class="n svelte-1op6c6">11</td><td class="small svelte-1op6c6">app ×202 · email ×147 · form ×25</td><td class="small svelte-1op6c6">parser ×351 · hint ×23</td><td class="small svelte-1op6c6">2026-04-01 → 2026-10-04</td><td class="svelte-1op6c6"><!--[0--><a href="https://github.com/kochapas/support-kb-4471/issues/1">#1</a><!--]--></td></tr><tr class="svelte-1op6c6"><td class="svelte-1op6c6"><code>hint</code><br/><span class="title svelte-1op6c6">booking-v3 hint tells day-first tenants to type MM/DD/YYYY</span></td><td class="n svelte-1op6c6">33</td><td class="n svelte-1op6c6">3</td><td class="small svelte-1op6c6">form ×33</td><td class="small svelte-1op6c6">hint ×18 · parser ×15</td><td class="small svelte-1op6c6">2026-04-17 → 2026-09-22</td><td class="svelte-1op6c6"><!--[0--><a href="https://github.com/kochapas/support-kb-4471/issues/2">#2</a><!--]--></td></tr><tr class="svelte-1op6c6"><td class="svelte-1op6c6"><code>shift</code><br/><span class="title svelte-1op6c6">Invite dates move one day between time zones</span></td><td class="n svelte-1op6c6">5</td><td class="n svelte-1op6c6">5</td><td class="small svelte-1op6c6">email ×3 · app ×2</td><td class="small svelte-1op6c6">parser ×5</td><td class="small svelte-1op6c6">2026-04-02 → 2026-10-04</td><td class="svelte-1op6c6"><!--[0--><a href="https://github.com/kochapas/support-kb-4471/issues/3">#3</a><!--]--></td></tr><!--]--></tbody><tfoot class="svelte-1op6c6"><tr><td class="svelte-1op6c6">placed</td><td class="n svelte-1op6c6">412</td><td colspan="5" class="small svelte-1op6c6">every report in #4471 sits under exactly one problem</td></tr></tfoot></table> <p class="note svelte-1op6c6">10 of 12 subject lines turn up under more than one problem: <!--[--><q>Booking on the wrong date</q> (parser, hint) · <q>Calendar invite is wrong</q> (parser, hint) · <q>Client turned up on the wrong day</q> (parser, hint, shift) · <q>Date is wrong</q> (parser, hint, shift) · <q>Dates mixed up</q> (parser, hint) · <q>Invite came on the wrong day</q> (parser, hint) · <q>Month and day swapped?</q> (parser, hint, shift) · <q>Reminder went out on the wrong day</q> (parser, hint, shift) · <q>Wrong date again</q> (parser, hint) · <q>Wrong day on the invite</q> (parser, hint, shift).<!--]--></p> <!--[--><section class="svelte-1op6c6"><h3 class="svelte-1op6c6"><code>parser</code> · Shared parser reads day-first dates month first</h3> <p class="small svelte-1op6c6">tenants: alder.physio, copper.studio, harbour.dental, kettle.books, lantern.row, long.table, morrow.tax, nine.lanterns, pale.harbour, ridge.clinic, stone.and.sons</p> <!--[--><blockquote class="svelte-1op6c6"><span class="id svelte-1op6c6">R-41200 · harbour.dental · app</span> Our 7 April reminder went out on 4 July. Is this a joke. It is not April Fools where we are.</blockquote><blockquote class="svelte-1op6c6"><span class="id svelte-1op6c6">R-41201 · harbour.dental · app</span> Sorry. 4 July went out on 7 April. I have been up since five.</blockquote><!--]--></section><section class="svelte-1op6c6"><h3 class="svelte-1op6c6"><code>hint</code> · booking-v3 hint tells day-first tenants to type MM/DD/YYYY</h3> <p class="small svelte-1op6c6">tenants: alder.physio, copper.studio, pale.harbour</p> <!--[--><blockquote class="svelte-1op6c6"><span class="id svelte-1op6c6">R-41230 · copper.studio · form</span> My client came on 1 June instead of 6 January. We sorted it out.</blockquote><blockquote class="svelte-1op6c6"><span class="id svelte-1op6c6">R-41241 · alder.physio · form</span> We had two people show up on 8 June. They were booked for 6 August.</blockquote><!--]--></section><section class="svelte-1op6c6"><h3 class="svelte-1op6c6"><code>shift</code> · Invite dates move one day between time zones</h3> <p class="small svelte-1op6c6">tenants: alder.physio, kettle.books, lantern.row, nine.lanterns, pale.harbour</p> <!--[--><blockquote class="svelte-1op6c6"><span class="id svelte-1op6c6">R-41202 · kettle.books · email</span> Invite says Tuesday 12 May. Calendar says Monday 11 May. My client turned up on the Monday. We had coffee.</blockquote><blockquote class="svelte-1op6c6"><span class="id svelte-1op6c6">R-41209 · alder.physio · app</span> Every booking in June is one day off. Only June. Why only June.</blockquote><!--]--></section><!--]--><!----> <h2>How a report is placed</h2> <p>Each report goes under exactly one problem. The logic is in <code>#lib/kb/problems</code>; this list is
+what it does.</p> <ol><li><strong><code>shift</code></strong>: the desk read the report as a one-day move (<code>desk-notes.json</code>). A month and a day
+that trade places never land one day apart, so these are not <code>parser</code> reports, whatever the
+tenant writes.</li> <li><strong><code>hint</code></strong>: the tenant writes the day first and the report came in through a booking-v3 form,
+whose hint prints <code>MM/DD/YYYY</code> (<code>causes.ts</code>).</li> <li><strong><code>parser</code></strong>: the tenant writes the day first and none of the above holds (<code>causes.ts</code>).</li> <li><strong><code>unplaced</code></strong>: no tenant on file, or the tenant does not write the day first. No ticket until
+someone reads them.</li></ol> <p>Intake’s tag is a guess from the reporter’s browser. The table shows it next to the problem so
+the gap stays visible: an en-US browser is not a booking-v3 form.</p> <h2>What each ticket asks for</h2> <p><strong><code>parser</code></strong>: the shared parser reads every date month first. For a tenant who writes the day
+first, any date with both numbers at 12 or under comes out with day and month swapped:
+booked 2 July, invite for 7 February. Fix: parse with the tenant’s locale, the way <code>dayFirst()</code> already asks the platform.</p> <p><strong><code>hint</code></strong>: booking-v3 prints <code>MM/DD/YYYY</code> under its date field, and the form then reads the
+date the tenant’s way, day first. People type what the hint says and get day and month
+swapped. Fix: print the hint from the tenant’s locale. The parser fix does not reach this one.</p> <p><strong><code>shift</code></strong>: the date is right but lands one day early for some readers: the same meeting shows
+Tuesday in Lisbon and Monday in Toronto, and an invite can arrive “before” the booking. That is
+a date sent as midnight in one time zone and shown in another. Fix: send all-day dates as dates,
+not as instants.</p> <h2>For the desk</h2> <ul><li>Matching on subject merged these (<a href="/kb/decisions/0001-dedupe-by-subject">decision 0001</a>). The same
+subject line turns up under different problems, so the subject cannot tell them apart. Read the
+body, or at least the tenant and the way in, before you merge.</li> <li>Keep a report’s ticket with its problem. When a new report comes in for #4471, place it with the
+table above and add it to that problem’s ticket.</li> <li>The numbers on this page are built from the reports at render time. When the desk merges more
+reports into #4471, they move on their own.</li></ul> <!--[0--><p class="stamp svelte-1280m42">desk ref <b class="svelte-1280m42">DR-CJAN-ZW8D</b></p><!--]--><!----><!----></main> <footer class="svelte-e2jw2j">Pages are written by people. Tables and charts are built from data at render time.</footer></div><!--]--><!--]--><!--]--><!----><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1mr7dug = {
+						base: new URL("../..", location).pathname.slice(0, -1),
+						version: "1793896098799"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("../../_app/immutable/entry/start.BPcehJr-.js").then(async (kit) => {
+						kit.init(__sveltekit_1mr7dug);
+						const app = await import("../../_app/immutable/entry/app.Y6lVzF4B.js");
+						kit.start(app, element, {
+							node_ids: [0, 5],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
