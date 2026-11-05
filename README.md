@@ -34,3 +34,11 @@ Support desk. Decision records: whoever signed them.
 ---
 
 Exported 2026-10-04 from the `support` repo, `apps/kb/` → `src/`.
+
+## #4471, split (added 2026-11-06)
+
+`#4471` holds three problems, not one. Each has its own ticket in this repo's issues, with how many reports it covers.
+
+- Page: `src/routes/kb/incidents/4471-split/+page.svx`, logic in `src/lib/kb/problems.ts` and `src/lib/kb/ProblemTable.svelte`.
+- The page as the desk sees it: `rendered/site/kb/incidents/4471-split.html` (static build) and `rendered/4471-split.png` (screenshot).
+- Build it yourself: `nvm use && npm ci && npm run build` (Node 22.17+), then open `build/kb/incidents/4471-split.html`, or `npm run dev` and go to `/kb/incidents/4471-split`.

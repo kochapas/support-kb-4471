@@ -1,0 +1,72 @@
+---
+layout: runbook
+title: '#4471 · what the reports show'
+owner: kochapas
+status: open
+reviewed: 2026-11-05
+signature: 'Allen (kochapas), with Claude Opus 5.5'
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Its reports say otherwise.
+Read for what happened to the date, not for their subject line, they hold three problems with
+three different fixes. Each problem now has a ticket of its own.
+
+<Callout kind="warn">
+The fix queued for #4471 changes the parser. It does not touch the booking-v3 form hint or the
+time zone of an invite, so reports from those two keep coming after it ships.
+</Callout>
+
+## The problems in #4471
+
+<ProblemTable ticket={4471} />
+
+## How a report is placed
+
+Each report goes under exactly one problem. The logic is in `#lib/kb/problems`; this list is
+what it does.
+
+1. **`shift`**: the desk read the report as a one-day move (`desk-notes.json`). A month and a day
+   that trade places never land one day apart, so these are not `parser` reports, whatever the
+   tenant writes.
+2. **`hint`**: the tenant writes the day first and the report came in through a booking-v3 form,
+   whose hint prints `MM/DD/YYYY` (`causes.ts`).
+3. **`parser`**: the tenant writes the day first and none of the above holds (`causes.ts`).
+4. **`unplaced`**: no tenant on file, or the tenant does not write the day first. No ticket until
+   someone reads them.
+
+Intake's tag is a guess from the reporter's browser. The table shows it next to the problem so
+the gap stays visible: an en-US browser is not a booking-v3 form.
+
+## What each ticket asks for
+
+**`parser`**: the shared parser reads every date month first. For a tenant who writes the day
+first, any date with both numbers at 12 or under comes out with day and month swapped:
+booked 2 July, invite for 7 February. Fix: parse with the tenant's locale, the way
+`dayFirst()` already asks the platform.
+
+**`hint`**: booking-v3 prints `MM/DD/YYYY` under its date field, and the form then reads the
+date the tenant's way, day first. People type what the hint says and get day and month
+swapped. Fix: print the hint from the tenant's locale. The parser fix does not reach this one.
+
+**`shift`**: the date is right but lands one day early for some readers: the same meeting shows
+Tuesday in Lisbon and Monday in Toronto, and an invite can arrive "before" the booking. That is
+a date sent as midnight in one time zone and shown in another. Fix: send all-day dates as dates,
+not as instants.
+
+## For the desk
+
+- Matching on subject merged these ([decision 0001](/kb/decisions/0001-dedupe-by-subject)). The same
+  subject line turns up under different problems, so the subject cannot tell them apart. Read the
+  body, or at least the tenant and the way in, before you merge.
+- Keep a report's ticket with its problem. When a new report comes in for #4471, place it with the
+  table above and add it to that problem's ticket.
+- The numbers on this page are built from the reports at render time. When the desk merges more
+  reports into #4471, they move on their own.
+
+<RenderStamp {signature} />
